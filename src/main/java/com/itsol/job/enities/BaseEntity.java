@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @EntityListeners({AuditingEntityListener.class})
 public abstract class BaseEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @CreatedDate
     LocalDateTime createdAt;

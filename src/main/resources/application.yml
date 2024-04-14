@@ -8,16 +8,20 @@ spring:
 #  profiles:
 #    active: ${ACTIVE_PROFILE:dev}
 #  datasource:
-#    url: dbc:mysql://192.168.1.219:3306/job_recommendation
+#    url: jdbc:mysql://192.168.1.219:3306/job_recommendation
 #    url: jdbc:mysql://localhost:5432/job_recommendation
 #    username: vaber
 #    password: vaber
 #    driver-class-name: com.mysql.cj.jdbc.Driver
   datasource:
-    url: jdbc:postgresql://localhost:5432/job_recommendation
-    username: postgres
-    password: 123
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mysql://localhost:3306/job_recommendation
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:postgresql://localhost:5432/job_recommendation
+#    username: postgres
+#    password: 123
+#    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,10 +30,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#    database: mysql
-#    database-platform: org.hibernate.dialect.MySQLDialect
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+#    database: postgresql
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
   sql:
     init:
       mode: always
