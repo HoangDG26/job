@@ -8,6 +8,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -25,6 +29,6 @@ public abstract class BaseEntity implements Serializable {
     LocalDateTime createdAt;
     @LastModifiedDate
     LocalDateTime updatedAt;
-    LocalDateTime  deletedAt;
+    LocalDateTime deletedAt;
 
 }

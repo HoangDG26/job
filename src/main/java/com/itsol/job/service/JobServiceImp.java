@@ -23,9 +23,9 @@ public class JobServiceImp implements JobService {
     public ResponseEntity<List<Job>> getJobList() {
         List<Job> jobList = jobRepository.findAll();
         if (jobList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"List Job is empty !!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "List Job is empty !!");
         }
-        return ResponseEntity.ok(jobList);
+        return ResponseEntity.ok().body(jobList);
     }
 
     @Override

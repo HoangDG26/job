@@ -17,12 +17,12 @@ import java.util.Collection;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners({AuditingEntityListener.class})
-public class EmployerAccount extends BaseEntity{
+public class Employer extends BaseEntity {
     String username;
     String password;
     Boolean isBanned;
     LocalDateTime lockedUntil;
     LocalDateTime lastLogin;
-    @OneToMany(mappedBy = "employerAccount", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Collection<Job> jobs;
+    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Collection<Job> jobs;
 }

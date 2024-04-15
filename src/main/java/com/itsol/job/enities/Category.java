@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Getter
@@ -16,11 +17,6 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Category extends BaseEntity {
     String description;
-    @ManyToMany
-    @JoinTable(
-            name = "job_category",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "job_id"))
-    Set<Job> jobs ;
-
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    Collection<JobCategory> jobCategories;
 }

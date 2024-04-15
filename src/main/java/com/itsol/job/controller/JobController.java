@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/jobs")
+@RequestMapping("api/v1")
 @Tag(name = "Jobs Controller", description = "Description")
 public class JobController {
     private final JobService jobService;
@@ -19,8 +19,9 @@ public class JobController {
     public JobController(JobService jobService) {
         this.jobService = jobService;
     }
-    @GetMapping
-    public ResponseEntity<List<Job>> jobList(Job job) {
+
+    @GetMapping("jobs")
+    public ResponseEntity<List<Job>> jobList() {
         return jobService.getJobList();
     }
 
