@@ -11,11 +11,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableJpaAuditing
 public class JobApplication {
-	private static final Logger logger = LoggerFactory.getLogger(JobApplication.class);
-	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(JobApplication.class, args);
-		Environment env = context.getEnvironment();
-		logger.info("Server listening on http://localhost:"+env.getProperty("server.port")+"/swagger-ui/index.html#/");
-	}
+    private static final Logger logger = LoggerFactory.getLogger(JobApplication.class);
+
+    public static void main(String[] args) {
+        ConfigurableApplicationContext context = SpringApplication.run(JobApplication.class, args);
+        Environment env = context.getEnvironment();
+        logger.info("Server listening on http://localhost:{}/swagger-ui/index.html#/", env.getProperty("server.port"));
+    }
 
 }
