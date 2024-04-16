@@ -3,6 +3,7 @@ package com.itsol.job.mapper;
 
 import com.itsol.job.dto.request.JobRequest;
 import com.itsol.job.dto.response.CategoryResponse;
+import com.itsol.job.dto.response.EmployerResponse;
 import com.itsol.job.dto.response.JobResponse;
 import com.itsol.job.dto.response.JobSkillResponse;
 import com.itsol.job.enities.Job;
@@ -22,8 +23,8 @@ public interface JobMapper {
 
     //-----------------------
     @Mappings({
-            @Mapping(target = "employer", source = "employer"),
-            @Mapping(target = "jobSkills", source = "jobSkills"),
+            @Mapping(target = "employer", source = "employerJobRequest"),
+            @Mapping(target = "jobSkills", source = "jobSkillsJobSkillResponses"),
             @Mapping(target = "jobCategories", source = "jobCategories")
     })
     Job fromReqToEntity(JobRequest jobRequest);
@@ -45,7 +46,9 @@ public interface JobMapper {
     default JobResponse fromEntityToRespWithClean(Job job) {
         JobResponse jobResponse = fromEntityToResp(job);
         if (job.getEmployer() != null) {
-            jobResponse.setEmployerName(job.getEmployer().getUsername());
+            jobResponse.setEmployer(new EmployerResponse(
+                    job.getEmployer().getId(),
+                    job.getEmployer().getUsername()));
         }
         //-------------job skill-----------------------------
         List<JobSkillResponse> jobSkillDTOs = job.getJobSkills().stream()

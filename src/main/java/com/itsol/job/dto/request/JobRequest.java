@@ -31,7 +31,7 @@ public class JobRequest {
     Integer maxYoe;
     String gender;
     LocalDate deadline;
-    Employer employer;
-    List<JobSkillResponse> jobSkills;
+    EmployerJobRequest employerJobRequest;
+    List<JobSkillResponse> jobSkillsJobSkillResponses;
     List<CategoryRequest> jobCategories;
 }

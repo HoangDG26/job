@@ -30,10 +30,10 @@ public class JobResponse {
     Integer maxYoe;
     String gender;
     LocalDate deadline;
-    String employerName;
+    EmployerResponse employer;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     List<JobSkillResponse> jobSkills;
     List<CategoryResponse> jobCategories;
-//    List<JobReportResponse> jobReports;
+
 }
