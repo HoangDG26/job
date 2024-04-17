@@ -6,7 +6,6 @@ import com.itsol.job.util.SimplePage;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface JobService {
     ResponseEntity<JobResponse> createJob(JobRequest jobRequest);
@@ -14,6 +13,8 @@ public interface JobService {
     ResponseEntity<List<JobResponse>> getJobList();
 
     ResponseEntity<SimplePage<JobResponse>> getJobs(Integer pageNo, Integer pageSize);
+
+    ResponseEntity<List<JobResponse>> getJobsWithFilter(String texBox);
 
     ResponseEntity<JobResponse> getJob(Long id);
 

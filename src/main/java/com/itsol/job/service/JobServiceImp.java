@@ -8,14 +8,19 @@ import com.itsol.job.enities.Job;
 import com.itsol.job.enities.JobCategory;
 import com.itsol.job.mapper.JobMapper;
 import com.itsol.job.repository.CategoryRepository;
+import com.itsol.job.repository.JobCategoryRepository;
 import com.itsol.job.repository.JobRepository;
 import com.itsol.job.util.SimplePage;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,8 +35,12 @@ public class JobServiceImp implements JobService {
     private final JobRepository jobRepository;
     private final EmployerService employerService;
     private final CategoryRepository categoryRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public JobServiceImp(JobRepository jobRepository, EmployerService employerService, CategoryRepository categoryRepository) {
+    public JobServiceImp(JobRepository jobRepository,
+                         EmployerService employerService,
+                         CategoryRepository categoryRepository) {
         this.jobRepository = jobRepository;
         this.employerService = employerService;
         this.categoryRepository = categoryRepository;
@@ -40,7 +49,25 @@ public class JobServiceImp implements JobService {
     @Override
     public ResponseEntity<JobResponse> createJob(JobRequest jobRequest) {
         Job job = JobMapper.INSTANCE.fromReqToEntity(jobRequest);
+        updateJobAttributes(job, jobRequest);
+        Job savedJob = jobRepository.save(job);
+        JobResponse jobResponse = JobMapper.INSTANCE.fromEntityToRespWithClean(savedJob);
+        return ResponseEntity.status(HttpStatus.CREATED).body(jobResponse);
 
+    }
+
+    @Override
+    public ResponseEntity<JobResponse> updateJob(JobRequest jobRequest, Long id) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found"));
+        updateJobAttributes(job, jobRequest);
+        job.setId(id);
+        JobResponse jobResponse = JobMapper.INSTANCE.fromEntityToRespWithClean(jobRepository.save(job));
+        return ResponseEntity.ok().body(jobResponse);
+    }
+
+    private void updateJobAttributes(Job job, JobRequest jobRequest) {
+        // Update job categories
         Collection<JobCategory> jobCategories = jobRequest.getJobCategories().stream()
                 .map(categoryId -> {
                     Category category = categoryRepository.findById(categoryId.getId())
@@ -50,18 +77,13 @@ public class JobServiceImp implements JobService {
                 .collect(Collectors.toList());
         job.setJobCategories(jobCategories);
 
-        //  Optional<Employer> optionalEmployer = employerRepository.findById(jobRequest.getEmployerJobRequest().getId());
+        // Update employer
         Employer employer = employerService.findEmployerById(jobRequest.getEmployerJobRequest().getId());
         job.setEmployer(employer);
 
-
+        // Update job skills
         job.getJobSkills().forEach(skill -> skill.setJob(job));
-        Job savedJob = jobRepository.save(job);
-
-        JobResponse jobResponse = JobMapper.INSTANCE.fromEntityToRespWithClean(savedJob);
-        return ResponseEntity.status(HttpStatus.CREATED).body(jobResponse);
     }
-
 
     @Override
     public ResponseEntity<List<JobResponse>> getJobList() {
@@ -90,6 +112,17 @@ public class JobServiceImp implements JobService {
     }
 
     @Override
+    public ResponseEntity<List<JobResponse>> getJobsWithFilter(String text) {
+        List<Job> jobList = jobRepository.searchJobByText(text);
+        if (jobList == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found");
+        }
+        List<JobResponse> responses = jobList.stream().map(JobMapper.INSTANCE::fromEntityToRespWithClean)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(responses);
+    }
+
+    @Override
     public ResponseEntity<JobResponse> getJob(Long id) {
         Optional<Job> optionalJob = jobRepository.findById(id);
         Job job = optionalJob.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found"));
@@ -97,15 +130,15 @@ public class JobServiceImp implements JobService {
 
     }
 
-    @Override
-    public ResponseEntity<JobResponse> updateJob(JobRequest jobRequest, Long id) {
-        return null;
-    }
 
     @Override
+    @Transactional
     public ResponseEntity<JobResponse> deleteJob(Long id) {
         Optional<Job> optionalJob = jobRepository.findById(id);
         Job job = optionalJob.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found"));
+        entityManager.createQuery("DELETE FROM JobCategory jc WHERE jc.job = :job")
+                .setParameter("job", job)
+                .executeUpdate();
         jobRepository.delete(job);
         return ResponseEntity.ok().build();
     }

@@ -32,11 +32,23 @@ public class JobController {
         return jobService.getJobList();
     }
 
+    @PatchMapping("jobs/{id}")
+    public ResponseEntity<JobResponse> updateJob(@RequestBody @Valid JobRequest jobRequest, @PathVariable long id) {
+        return jobService.updateJob(jobRequest, id);
+
+    }
+
     @GetMapping("jobs-pagination")
     public ResponseEntity<SimplePage<JobResponse>> jobListWithPagination(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         return jobService.getJobs(pageNo, pageSize);
+    }
+
+    @GetMapping("jobs-pagination/{text}")
+    public ResponseEntity<List<JobResponse>> getJobsWithFilter(
+            @PathVariable String text) {
+        return jobService.getJobsWithFilter(text);
     }
 
     @GetMapping("jobs/{id}")
