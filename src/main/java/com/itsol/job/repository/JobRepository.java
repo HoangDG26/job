@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
     @Query("select j from Job j WHERE " +
-            "CONCAT(j.title, j.description, j.benefit,j.requirement,j.type,j.position ) LIKE %?1% "
+            "j.title LIKE %?1% "
     )
     List<Job> searchJobByText(String text);
 }

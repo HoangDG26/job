@@ -14,7 +14,10 @@ public interface JobService {
 
     ResponseEntity<SimplePage<JobResponse>> getJobs(Integer pageNo, Integer pageSize);
 
-    ResponseEntity<List<JobResponse>> getJobsWithFilter(String texBox);
+    ResponseEntity<List<JobResponse>> getByTitle(String title);
+
+    ResponseEntity<SimplePage<JobResponse>> getJobsWithFilter(String text, Integer pageNo, Integer pageSize);
+
 
     ResponseEntity<JobResponse> getJob(Long id);
 

@@ -8,19 +8,14 @@ import com.itsol.job.enities.Job;
 import com.itsol.job.enities.JobCategory;
 import com.itsol.job.mapper.JobMapper;
 import com.itsol.job.repository.CategoryRepository;
-import com.itsol.job.repository.JobCategoryRepository;
 import com.itsol.job.repository.JobRepository;
 import com.itsol.job.util.SimplePage;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -100,19 +95,11 @@ public class JobServiceImp implements JobService {
     public ResponseEntity<SimplePage<JobResponse>> getJobs(Integer pageNo, Integer pageSize) {
         Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
         Page<Job> jobs = jobRepository.findAll(paging);
-        if (jobs.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "List Job is empty !!");
-        }
-        SimplePage<JobResponse> jobResponses = new SimplePage<>(
-                jobs.getContent().stream()
-                        .map(JobMapper.INSTANCE::fromEntityToRespWithClean)
-                        .collect(Collectors.toList()), paging, jobs.getTotalElements()
-        );
-        return ResponseEntity.ok().body(jobResponses);
+        return getSimplePageResponseEntity(paging, jobs);
     }
 
     @Override
-    public ResponseEntity<List<JobResponse>> getJobsWithFilter(String text) {
+    public ResponseEntity<List<JobResponse>> getByTitle(String text) {
         List<Job> jobList = jobRepository.searchJobByText(text);
         if (jobList == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found");
@@ -120,6 +107,33 @@ public class JobServiceImp implements JobService {
         List<JobResponse> responses = jobList.stream().map(JobMapper.INSTANCE::fromEntityToRespWithClean)
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(responses);
+    }
+
+    @Override
+    public ResponseEntity<SimplePage<JobResponse>> getJobsWithFilter(String text, Integer pageNo, Integer pageSize) {
+        Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").ascending());
+
+        Page<Job> jobs;
+        if (text == null || text.isBlank()) {
+            jobs = jobRepository.findAll(paging);
+        } else {
+            jobs = new PageImpl<>(jobRepository.searchJobByText(text), paging, jobRepository.count());
+        }
+
+        return getSimplePageResponseEntity(paging, jobs);
+    }
+
+    private ResponseEntity<SimplePage<JobResponse>> getSimplePageResponseEntity(Pageable paging, Page<Job> jobs) {
+        if (jobs.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "List Job is empty !!");
+        }
+
+        SimplePage<JobResponse> jobResponses = new SimplePage<>(
+                jobs.getContent().stream()
+                        .map(JobMapper.INSTANCE::fromEntityToRespWithClean)
+                        .collect(Collectors.toList()), paging, jobs.getTotalElements()
+        );
+        return ResponseEntity.ok().body(jobResponses);
     }
 
     @Override

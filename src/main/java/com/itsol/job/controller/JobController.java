@@ -46,9 +46,21 @@ public class JobController {
     }
 
     @GetMapping("jobs-pagination/{text}")
+    public ResponseEntity<SimplePage<JobResponse>> getJobsWithFilter(
+            @PathVariable String text,
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return jobService.getJobsWithFilter(text, pageNo, pageSize);
+//        return null;
+    }
+
+    @GetMapping("jobs-search/{text}")
     public ResponseEntity<List<JobResponse>> getJobsWithFilter(
-            @PathVariable String text) {
-        return jobService.getJobsWithFilter(text);
+            @PathVariable String text
+
+    ) {
+        return jobService.getByTitle(text);
     }
 
     @GetMapping("jobs/{id}")
