@@ -13,16 +13,19 @@ import com.itsol.job.util.SimplePage;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 public class JobServiceImp implements JobService {
@@ -121,6 +124,17 @@ public class JobServiceImp implements JobService {
         }
 
         return getSimplePageResponseEntity(paging, jobs);
+    }
+
+    @Override
+    public ResponseEntity<List<JobResponse>> findJobsWithCursor(String searchTerm, Long cursor, Integer limit) {
+        List<Job> jobs = jobRepository.findJobsWithCursor(searchTerm, cursor, limit);
+        if (jobs == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found");
+        }
+        List<JobResponse> responses = jobs.stream().map(JobMapper.INSTANCE::fromEntityToRespWithClean)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok().body(responses);
     }
 
     private ResponseEntity<SimplePage<JobResponse>> getSimplePageResponseEntity(Pageable paging, Page<Job> jobs) {
