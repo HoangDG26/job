@@ -54,11 +54,11 @@ public class JobController {
 //    }
 
     @GetMapping("jobs")
-    public ResponseEntity<List<JobResponse>> findJobsWithCursor(
-            @RequestParam(defaultValue = "0") Long cursor,
-            @RequestParam(defaultValue = "10") Integer limit,
+    public ResponseEntity<List<JobResponse>> findJobsWithKeySet(
+            @RequestParam(defaultValue = "0") Long last_seen_id,
+            @RequestParam(defaultValue = "10") Integer size,
             @RequestParam String title) {
-        return jobService.findJobsWithCursor(title, cursor, limit);
+        return jobService.findJobsWithKeySet(title, last_seen_id, size);
     }
 
 //    @GetMapping("jobs-search/{text}")

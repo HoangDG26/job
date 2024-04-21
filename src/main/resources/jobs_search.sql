@@ -1,5 +1,5 @@
-SELECT * FROM job_recommendation.jobs j
+SELECT j FROM Job j
 WHERE j.title LIKE CONCAT('%', :searchTerm, '%')
-  AND j.id < :cursor
-ORDER BY j.id ASC
-    LIMIT :siz;
+  AND j.employer.id > :cursor
+ORDER BY j.employer.id ASC
+    LIMIT :size

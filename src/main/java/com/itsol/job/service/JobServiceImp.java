@@ -127,8 +127,8 @@ public class JobServiceImp implements JobService {
     }
 
     @Override
-    public ResponseEntity<List<JobResponse>> findJobsWithCursor(String searchTerm, Long cursor, Integer limit) {
-        List<Job> jobs = jobRepository.findJobsWithCursor(searchTerm, cursor, limit);
+    public ResponseEntity<List<JobResponse>> findJobsWithKeySet(String searchTerm, Long last_seen_id, Integer size) {
+        List<Job> jobs = jobRepository.findJobsWithCursor(searchTerm, last_seen_id, size);
         if (jobs == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found");
         }

@@ -18,12 +18,11 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     //
     @Query("SELECT j FROM Job j " +
             "WHERE j.title LIKE CONCAT('%', :searchTerm, '%') " +
-            "AND j.employer.id > :cursor " +
+            "AND j.employer.id > :last_seen_id " +
             "ORDER BY j.employer.id ASC " +
             "LIMIT :size")
-    // @Query(value = "resource/jobs_search.sql", nativeQuery = true)
     List<Job> findJobsWithCursor(@Param("searchTerm") String searchTerm,
-                                 @Param("cursor") Long cursor,
+                                 @Param("last_seen_id") Long last_seen_id,
                                  @Param("size") Integer size);
 }
 

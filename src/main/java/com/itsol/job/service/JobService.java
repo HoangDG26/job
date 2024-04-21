@@ -20,7 +20,7 @@ public interface JobService {
 
     ResponseEntity<SimplePage<JobResponse>> getJobsWithFilter(String text, Integer pageNo, Integer pageSize);
 
-    ResponseEntity<List<JobResponse>> findJobsWithCursor(String searchTerm, Long cursor, Integer limit);
+    ResponseEntity<List<JobResponse>> findJobsWithKeySet(String searchTerm, Long cursor, Integer limit);
 
     ResponseEntity<JobResponse> getJob(Long id);
 
